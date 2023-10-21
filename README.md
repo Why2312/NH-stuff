@@ -1,2 +1,4 @@
 # NH-stuff
-stuff i made for new horizons, https://www.roblox.com/games/11292443771/New-Horizon-Beta
+SKUL
+
+this contains mostly models and code
