@@ -36,7 +36,7 @@ num1, num2 = pcall(function()
                 return true -- Target is valid for firing
             end
         end
-        return true
+        return "no result" -- No target found
     end
     local near = 5 -- studs
     local far = 200 -- studs
@@ -105,16 +105,21 @@ num1, num2 = pcall(function()
             switch:Configure({SwitchState = false})
             return -- Do not aim at dead targets
         end
-        
+        local amountNoResult = 0
         local shouldFire = false
         for _, raycaster in ipairs(raycasters) do
             local result = raycaster:GetReading()
-            if EvaluateRaycasterTarget(result) then
+            local result2 = EvaluateRaycasterTarget(result)
+            if result2 == true then
                 shouldFire = true
-            else
+            elseif result2 == "no result" then
+                amountNoResult += 1
                 shouldFire = false
                 break -- In case one is touching important parts
             end
+        end
+        if amountNoResult == #raycasters then
+            shouldFire = false -- Why fire at nothing or terrain?
         end
         
         -- Fire if the target is valid and not a friend
