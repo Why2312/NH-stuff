@@ -49,7 +49,15 @@ num1, num2 = pcall(function()
     
                 -- Check if target is within the allowed distance range
                 if mag >= near and mag <= far then
-                    local weight = ((v.Health / 100) * WEIGHTS.health) + ((1 - mag / far) * WEIGHTS.distance)
+                    local healthWeight = (v.Health / 100) * WEIGHTS.health
+                    local distanceWeight = (1 - mag / far) * WEIGHTS.distance
+                    if WEIGHTS.health == 0 then
+                        healthWeight = 0
+                    end
+                    if WEIGHTS.distance == 0 then
+                        distanceWeight = 0
+                    end
+                    local weight = healthWeight + distanceWeight
                     local randomFactor = math.random() * 0.1  -- Adjust the range of randomness as needed
                     weight = weight + randomFactor
                     if v.ID == previous then weight += WEIGHTS.previous end
