@@ -46,10 +46,14 @@ num1, num2 = pcall(function()
             if not isintable(playerwhitelist, v.Name) and v.Health > 0 then
                 local pos = v.Position
                 local mag = (pos - currentpos).Magnitude
-                local weight = (v.Health / 100 * WEIGHTS.health) + (1 - mag / far * WEIGHTS.distance)
-                if v.ID == previous then weight += WEIGHTS.previous end
-                if weight > closest[3] then
-                    closest = {v, mag, weight}
+    
+                -- Check if target is within the allowed distance range
+                if mag >= near and mag <= far then
+                    local weight = (v.Health / 100 * WEIGHTS.health) + (1 - mag / far * WEIGHTS.distance)
+                    if v.ID == previous then weight += WEIGHTS.previous end
+                    if weight > closest[3] then
+                        closest = {v, mag, weight}
+                    end
                 end
             end
         end
@@ -85,32 +89,21 @@ num1, num2 = pcall(function()
         end
     
     
-        local count = 0
-        while task.wait() do
-            local distance = (target.Position - currentpos).Magnitude
-            if distance > far then
-                return -- Do not aim at targets that are too far away
-            end
-            if distance < near then
-                return -- Do not aim at targets that are too close
-            end
-            -- All passed? point to its new position and shoot
-            local newpos = target.Position + (target.AssemblyLinearVelocity * getVelocityMultiplier(distance))
-            local rot = CalculateRotation(currentpos, newpos)
-            gyro:LookAtVector(newpos) -- no need to check if we are hitting a part, most likely sure it barely moves
-            if target ~= nil and target.Health == 0 then
-                break
-            end
-            if not target then break end
-            if count > 10 then break end -- Break after 45 frames
-            local currentrot = instrument:GetReading(4)
-            -- Check magnitude of rotation, if its close enough, break (10 degrees)
-            local rotationDifference = (rot - currentrot).Magnitude
-            print(rotationDifference)
-            if rotationDifference < 25 or rotationDifference > (360 - 25) then
-                break
-            end
-            count += 1
+    
+        local distance = (target.Position - currentpos).Magnitude
+        if distance > far then
+            switch:Configure({SwitchState = false})
+            return -- Do not aim at targets that are too far away
+        end
+        if distance < near then
+            switch:Configure({SwitchState = false})
+            return -- Do not aim at targets that are too close
+        end
+        local newpos = target.Position + (target.AssemblyLinearVelocity * getVelocityMultiplier(distance))
+        gyro:LookAtVector(newpos)
+        if target ~= nil or target.Health == 0 then
+            switch:Configure({SwitchState = false})
+            return -- Do not aim at dead targets
         end
         
         local shouldFire = false
@@ -129,6 +122,7 @@ num1, num2 = pcall(function()
             switch:Configure({SwitchState = true})
             -- Additional logic for firing duration or burst firing can be added here
         else
+            print("sad2")
             switch:Configure({SwitchState = false})
         end
     end
@@ -176,6 +170,7 @@ num1, num2 = pcall(function()
                         previous = target.ID
                         print("set!!!")
                     else
+                        print("sad")
                         switch:Configure({SwitchState=false})
                     end
                 end)
@@ -214,6 +209,7 @@ num1, num2 = pcall(function()
                     speaker:Chat("Player is already whitelisted!")
                 else
                     table.insert(playerwhitelist, args[1])
+                    speaker:Chat("Player has been added to the whitelist!")
                     print("i got here")
                     print(args[1])
                     recursiveprint(playerwhitelist)
@@ -228,6 +224,7 @@ num1, num2 = pcall(function()
                     speaker:Chat("You cannot remove yourself!")
                 else
                     table.remove(playerwhitelist, findIndex(playerwhitelist, args[1]))
+                    speaker:Chat("Player has been removed from the whitelist!")
                     ssd:Write("whitelist", JSONEncode(playerwhitelist))
                 end
             end
@@ -252,8 +249,17 @@ num1, num2 = pcall(function()
                 speaker:Chat("Whitelisted players:")
                 for _, v in pairs(playerwhitelist) do
                     speaker:Chat(v)
-                    task.wait(1)
+                    task.wait(0.5)
                 end
+            end
+        },
+        reset = {
+            reqWhitelist = true,
+            func = function(plr, args)
+                speaker:Chat("Resetting turret...")
+                StopAiming()
+                ssd:Write("whitelist", JSONEncode({}))
+                speaker:Chat("Turret has been reset!")
             end
         },
         init = {
@@ -271,16 +277,13 @@ num1, num2 = pcall(function()
                 end
             end
         },
-        loadlink = {
-            reqWhitelist = true,
+        listCommands = {
+            reqWhitelist = false,
             func = function(plr, args)
-                if #args == 0 then
-                    speaker:Chat("Please provide a link!")
-                else
-                    -- Load a link and save it to the SSD
-                    local link = args[1]
-                    ssd:Write("link", link)
-                    speaker:Chat("Link loaded!")
+                speaker:Chat("Commands:")
+                for k, v in pairs(methods) do
+                    speaker:Chat(prefix .. k)
+                    task.wait(0.5)
                 end
             end
         },
@@ -318,8 +321,8 @@ num1, num2 = pcall(function()
     
     microphone.Chatted:Connect(OnChat)
     print("works?")
+    speaker:Chat("hi!!")
     while task.wait(1) do
-        continue
     end
     
 end)
