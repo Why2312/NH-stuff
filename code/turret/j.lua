@@ -199,8 +199,12 @@ num1, num2 = pcall(function()
         end
         switch:Configure({SwitchState = false}) -- Make sure the turret is not firing    
     end
-    
-    local methods = {
+
+    local methods = {}
+    function getMethods()
+        return methods
+    end
+    methods = {
         addWhitelist = {
             reqWhitelist = true,
             func = function(plr, args)
@@ -248,7 +252,7 @@ num1, num2 = pcall(function()
             func = function(plr, args)
                 speaker:Chat("Whitelisted players:")
                 for _, v in pairs(playerwhitelist) do
-                    speaker:Chat(v)
+                    speaker:Chat("@"..v)
                     task.wait(0.5)
                 end
             end
@@ -281,7 +285,7 @@ num1, num2 = pcall(function()
             reqWhitelist = false,
             func = function(plr, args)
                 speaker:Chat("Commands:")
-                for k, v in pairs(methods) do
+                for k, v in getMethods() do
                     speaker:Chat(prefix .. k)
                     task.wait(0.5)
                 end
