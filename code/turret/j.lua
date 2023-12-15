@@ -23,12 +23,9 @@ num1, num2 = pcall(function()
     local aimingCoroutine = nil
     WEIGHTS = {
         health = 2.1, -- Multiplication
-        distance = 1.3, -- Multiplication
+        distance = 2, -- Multiplication
         previous = 0.5, -- Addition
     }
-
-    local TARGET_SWITCH_TIME = 5  -- Time in seconds after which the turret will consider switching targets
-    local lastTargetSwitchTime = 0
     
     
     local function EvaluateRaycasterTarget(result)
@@ -56,6 +53,7 @@ num1, num2 = pcall(function()
                     local randomFactor = math.random() * 0.1  -- Adjust the range of randomness as needed
                     weight = weight + randomFactor
                     if v.ID == previous then weight += WEIGHTS.previous end
+                    print(v.ID, weight)
                     if weight > closest[3] then
                         closest = {v, mag, weight}
                     end
