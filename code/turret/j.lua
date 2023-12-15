@@ -101,7 +101,7 @@ num1, num2 = pcall(function()
         end
         local newpos = target.Position + (target.AssemblyLinearVelocity * getVelocityMultiplier(distance))
         gyro:LookAtVector(newpos)
-        if target ~= nil or target.Health == 0 then
+        if target ~= nil and target.Health == 0 then
             switch:Configure({SwitchState = false})
             return -- Do not aim at dead targets
         end
