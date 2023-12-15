@@ -24,7 +24,7 @@ num1, num2 = pcall(function()
     WEIGHTS = {
         health = 2.1, -- Multiplication
         distance = 2, -- Multiplication
-        previous = 0.5, -- Addition
+        previous = 0, -- Addition
     }
     
     
@@ -53,7 +53,7 @@ num1, num2 = pcall(function()
                     local randomFactor = math.random() * 0.1  -- Adjust the range of randomness as needed
                     weight = weight + randomFactor
                     if v.ID == previous then weight += WEIGHTS.previous end
-                    print(v.ID, weight)
+                    print(v.Name, weight)
                     if weight > closest[3] then
                         closest = {v, mag, weight}
                     end
