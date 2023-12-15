@@ -24,8 +24,11 @@ num1, num2 = pcall(function()
     WEIGHTS = {
         health = 2.1, -- Multiplication
         distance = 1.3, -- Multiplication
-        previous = 2.0, -- Addition
+        previous = 0.5, -- Addition
     }
+
+    local TARGET_SWITCH_TIME = 5  -- Time in seconds after which the turret will consider switching targets
+    local lastTargetSwitchTime = 0
     
     
     local function EvaluateRaycasterTarget(result)
@@ -50,6 +53,8 @@ num1, num2 = pcall(function()
                 -- Check if target is within the allowed distance range
                 if mag >= near and mag <= far then
                     local weight = (v.Health / 100 * WEIGHTS.health) + (1 - mag / far * WEIGHTS.distance)
+                    local randomFactor = math.random() * 0.1  -- Adjust the range of randomness as needed
+                    weight = weight + randomFactor
                     if v.ID == previous then weight += WEIGHTS.previous end
                     if weight > closest[3] then
                         closest = {v, mag, weight}
