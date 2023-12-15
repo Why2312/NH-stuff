@@ -52,9 +52,11 @@ num1, num2 = pcall(function()
                     local healthWeight = (v.Health / 100) * WEIGHTS.health
                     local distanceWeight = (1 - mag / far) * WEIGHTS.distance
                     if WEIGHTS.health == 0 then
+                        print("legit?")
                         healthWeight = 0
                     end
                     if WEIGHTS.distance == 0 then
+                        print("legit2?")
                         distanceWeight = 0
                     end
                     local weight = healthWeight + distanceWeight
