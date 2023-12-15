@@ -22,8 +22,8 @@ num1, num2 = pcall(function()
     local prefix = "!t "
     local aimingCoroutine = nil
     WEIGHTS = {
-        health = 2.1, -- Multiplication
-        distance = 0, -- Multiplication
+        health = 0, -- Multiplication
+        distance = 2, -- Multiplication
         previous = 0.1, -- Addition
     }
     
